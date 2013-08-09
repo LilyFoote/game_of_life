@@ -1,3 +1,4 @@
+from __future__ import division
 from collections import Counter
 
 from kivy.app import App
@@ -9,10 +10,13 @@ from kivy.uix.scatter import ScatterPlane
 import life
 
 BLUE = (0, 0, 1)
+CYAN = (0, 1, 1)
 
 class LifeBoard(ScatterPlane):
     cells = ObjectProperty(Counter())
     alive_colour = ListProperty(BLUE)
+    aged_cell_colour = ListProperty(CYAN)
+
     cell_width = NumericProperty(10)
     cell_size = ReferenceListProperty(cell_width, cell_width)
     draw = BooleanProperty(False)
@@ -23,10 +27,18 @@ class LifeBoard(ScatterPlane):
     def on_cells(self, instance, value):
         self.canvas.clear()
         with self.canvas:
-            for cell in value:
+            for cell, age in value.items():
                 pos = [cell[0]*self.cell_width, cell[1]*self.cell_width]
-                Color(*self.alive_colour)
+                Color(*self.interpolate_colour(age))
                 Rectangle(size=self.cell_size, pos=pos)
+
+    def interpolate_colour(self, cell_age):
+        new_colour = self.old_cell_colour
+        old_colour = self.alive_colour
+        age = min(cell_age - 1, 16)
+        delta = [(new - old)*age/16 for new, old in zip(new_colour, old_colour)]
+        colour = [old + d for old, d in zip(old_colour, delta)]
+        return colour
 
     def toggle_draw(self, value):
         self.draw = value == 'down'
