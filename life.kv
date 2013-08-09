@@ -1,0 +1,17 @@
+BoxLayout:
+    orientation: 'horizontal'
+    BoxLayout:
+        orientation: 'vertical'
+        LifeBoard:
+            id: life
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 100
+            Button:
+                text: 'Next'
+                on_release: life.update_cells()
+            ToggleButton:
+                text: 'Add cells'
+                on_state: life.toggle_draw(args[1])
+
