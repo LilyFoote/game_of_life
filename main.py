@@ -92,6 +92,8 @@ class LifeBoard(ScatterPlane):
         elif self.erase and cells[pos]:
             cells[pos] = 0
             self.canvas.add(Color(*self.dead_colour))
+        else:
+            return
 
         self.canvas.add(Rectangle(size=self.cell_size, pos=cell_pos))
 
