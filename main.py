@@ -33,7 +33,7 @@ class LifeBoard(ScatterPlane):
                 Rectangle(size=self.cell_size, pos=pos)
 
     def interpolate_colour(self, cell_age):
-        new_colour = self.old_cell_colour
+        new_colour = self.aged_cell_colour
         old_colour = self.alive_colour
         age = min(cell_age - 1, 16)
         delta = [(new - old)*age/16 for new, old in zip(new_colour, old_colour)]
