@@ -7,6 +7,9 @@ from kivy.graphics import *
 from kivy.properties import (ObjectProperty, ListProperty, NumericProperty,
         BooleanProperty, ReferenceListProperty)
 from kivy.uix.scatter import ScatterPlane
+from kivy.uix.slider import Slider
+
+from kivy.garden.tickmarker import TickMarker
 
 import life
 
@@ -14,12 +17,15 @@ BLACK = (0, 0, 0)
 BLUE = (0, 0, 1)
 CYAN = (0, 1, 1)
 
+class TickSlider(Slider, TickMarker):
+    pass
+
 class LifeBoard(ScatterPlane):
     cells = ObjectProperty(Counter())
     dead_colour = ListProperty(BLACK)
     alive_colour = ListProperty(BLUE)
     aged_cell_colour = ListProperty(CYAN)
-    run_time = NumericProperty(1)
+    run_time = NumericProperty(0.3)
 
     cell_width = NumericProperty(10)
     cell_size = ReferenceListProperty(cell_width, cell_width)
