@@ -5,7 +5,7 @@ from kivy.app import App
 from kivy.clock import Clock
 from kivy.graphics import *
 from kivy.properties import (ObjectProperty, ListProperty, NumericProperty,
-        BooleanProperty, ReferenceListProperty)
+        BooleanProperty, ReferenceListProperty, BoundedNumericProperty)
 from kivy.uix.scatter import ScatterPlane
 from kivy.uix.slider import Slider
 
@@ -25,7 +25,7 @@ class LifeBoard(ScatterPlane):
     dead_colour = ListProperty(BLACK)
     alive_colour = ListProperty(BLUE)
     aged_cell_colour = ListProperty(CYAN)
-    run_time = NumericProperty(0.3)
+    run_time = NumericProperty()
 
     cell_width = NumericProperty(10)
     cell_size = ReferenceListProperty(cell_width, cell_width)
@@ -100,7 +100,22 @@ class LifeBoard(ScatterPlane):
         self.cells = cells
 
 class LifeApp(App):
-    pass
+    run_time = BoundedNumericProperty(1, min=0.016, max=1)
+
+    def build_config(self, config):
+        config.setdefaults('life', {
+            'run_time': 0.3,
+            })
+
+    def on_config_change(self, config, section, key, value):
+        if config is self.config:
+            token = (section, key)
+            if token == ('life', 'run_time'):
+                self.run_time = value
+
+    def build(self):
+        config = self.config
+        self.run_time = config.getfloat('life', 'run_time')
 
 if __name__ == '__main__':
     LifeApp().run()

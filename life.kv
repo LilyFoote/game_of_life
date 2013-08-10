@@ -48,7 +48,7 @@ BoxLayout:
             log: True
             min_log: 0.016
             max_log: 1
-            value_log: 0.3
+            value_log: app.run_time
 
             ticks_major: 1
             ticks_minor: 5
@@ -57,4 +57,4 @@ BoxLayout:
                 life.run_time = args[1]
 
         Label:
-            text: str(iteration_time.value_log)
+            text: '{:.2}'.format(iteration_time.value_log)
