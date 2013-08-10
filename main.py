@@ -22,9 +22,9 @@ class TickSlider(Slider, TickMarker):
 
 class LifeBoard(ScatterPlane):
     cells = ObjectProperty(Counter())
-    dead_colour = ListProperty(BLACK)
-    alive_colour = ListProperty(BLUE)
-    aged_cell_colour = ListProperty(CYAN)
+    dead_colour = ListProperty()
+    alive_colour = ListProperty()
+    aged_cell_colour = ListProperty()
     run_time = NumericProperty()
 
     cell_width = NumericProperty(10)
@@ -100,21 +100,36 @@ class LifeBoard(ScatterPlane):
 
 class LifeApp(App):
     run_time = BoundedNumericProperty(1, min=0.016, max=1)
+    dead_colour = ListProperty()
+    alive_colour = ListProperty()
+    aged_colour = ListProperty()
 
     def build_config(self, config):
         config.setdefaults('life', {
             'run_time': 0.3,
+            'dead_colour': BLACK,
+            'alive_colour': BLUE,
+            'aged_colour': CYAN,
             })
 
     def on_config_change(self, config, section, key, value):
         if config is self.config:
-            token = (section, key)
-            if token == ('life', 'run_time'):
-                self.run_time = value
+            if section == 'life':
+                if key == 'run_time':
+                    self.run_time = value
+                elif key == 'dead_colour':
+                    self.dead_colour = value
+                elif key == 'alive_colour':
+                    self.alive_colour = value
+                elif key == 'aged_colour':
+                    self.aged_colour = value
 
     def build(self):
         config = self.config
         self.run_time = config.getfloat('life', 'run_time')
+        self.dead_colour = config.get('life', 'dead_colour')
+        self.alive_colour = config.get('life', 'alive_colour')
+        self.aged_colour = config.get('life', 'aged_colour')
 
 if __name__ == '__main__':
     LifeApp().run()
