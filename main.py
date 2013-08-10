@@ -2,6 +2,7 @@ from __future__ import division
 from collections import Counter
 
 from kivy.app import App
+from kivy.clock import Clock
 from kivy.graphics import *
 from kivy.properties import (ObjectProperty, ListProperty, NumericProperty,
         BooleanProperty, ReferenceListProperty)
@@ -18,13 +19,14 @@ class LifeBoard(ScatterPlane):
     dead_colour = ListProperty(BLACK)
     alive_colour = ListProperty(BLUE)
     aged_cell_colour = ListProperty(CYAN)
+    run_time = NumericProperty(1)
 
     cell_width = NumericProperty(10)
     cell_size = ReferenceListProperty(cell_width, cell_width)
     draw = BooleanProperty(False)
     erase = BooleanProperty(False)
 
-    def update_cells(self):
+    def update_cells(self, *args):
         self.cells = life.next_iteration(self.cells)
 
     def on_cells(self, instance, value):
@@ -48,6 +50,13 @@ class LifeBoard(ScatterPlane):
 
     def toggle_erase(self, value):
         self.erase = value == 'down'
+
+    def toggle_run(self, value):
+        if value == 'down':
+            self.update_cells()
+            Clock.schedule_interval(self.update_cells, self.run_time)
+        else:
+            Clock.unschedule(self.update_cells)
 
     def on_touch_down(self, touch):
         if self.draw or self.erase:

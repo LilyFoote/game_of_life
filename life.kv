@@ -10,6 +10,10 @@ BoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
             height: 100
+            ToggleButton:
+                group: 'edit'
+                text: 'AutoRun'
+                on_state: life.toggle_run(args[1])
             Button:
                 text: 'Next'
                 on_release: life.update_cells()
