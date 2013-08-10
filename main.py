@@ -80,8 +80,7 @@ class LifeBoard(ScatterPlane):
         cells = self.cells
         cell_width = self.cell_width
 
-        x = touch.x - self.x
-        y = touch.y - self.y
+        x, y = self.to_local(*touch.pos)
 
         pos = (int(x//cell_width), int(y//cell_width))
         cell_pos = (pos[0]*cell_width, pos[1]*cell_width)
