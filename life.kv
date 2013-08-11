@@ -17,6 +17,13 @@ BoxLayout:
             size_hint_y: None
             height: 100
 
+            canvas:
+                Color:
+                    rgb: (0, 0, 0)
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+
             ToggleButton:
                 group: 'edit'
                 text: 'AutoRun'
@@ -44,6 +51,24 @@ BoxLayout:
         orientation: 'vertical'
         size_hint_x: 0.2
         padding: 5
+
+        canvas:
+            Color:
+                rgb: (0, 0, 0)
+            Rectangle:
+                size: self.size
+                pos: self.pos
+
+        PatternBox:
+            id: pattern_box
+            size_hint_y: None
+            height: self.parent.width
+            life_board: life
+
+        FileChooserListView:
+            path: 'data/patterns'
+            rootpath: 'data/patterns'
+            on_submit: pattern_box.load_pattern(args[1][0])
 
         TickSlider:
             id: iteration_time

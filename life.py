@@ -28,3 +28,10 @@ def next_iteration(old_board):
             if p not in old_board:
                 update_cell(p, new_board, old_board)
     return new_board
+
+def parse_life_1_06(pattern_file):
+    cells = set()
+    next(pattern_file) # Remove unwanted header
+    for line in pattern_file:
+        cells.add(tuple(int(i) for i in line.split()))
+    return cells

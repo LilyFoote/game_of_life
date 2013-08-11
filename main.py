@@ -6,7 +6,8 @@ from kivy.clock import Clock
 from kivy.graphics import *
 from kivy.properties import (ObjectProperty, ListProperty, NumericProperty,
         BooleanProperty, ReferenceListProperty, BoundedNumericProperty)
-from kivy.uix.scatter import ScatterPlane
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.scatter import ScatterPlane, Scatter
 from kivy.uix.slider import Slider
 
 from kivy.garden.tickmarker import TickMarker
@@ -26,6 +27,41 @@ COLOURS = {
 
 class TickSlider(Slider, TickMarker):
     pass
+
+class PatternBox(FloatLayout):
+    life_board = ObjectProperty()
+
+    def load_pattern(self, file_path):
+        pattern = LifePattern(
+                life_board=self.life_board,
+                pos=self.pos)
+        pattern.load_pattern(file_path)
+        self.add_widget(pattern)
+
+class LifePattern(Scatter):
+    life_board = ObjectProperty()
+
+    cells = ObjectProperty(set())
+    cell_width = NumericProperty(10)
+    cell_size = ReferenceListProperty(cell_width, cell_width)
+
+    alive_colour = ListProperty()
+
+    def on_cells(self, instance, value):
+        self.canvas.clear()
+        with self.canvas:
+            for cell in value:
+                pos = [cell[0]*self.cell_width, cell[1]*self.cell_width]
+                Color(*self.alive_colour)
+                Rectangle(size=self.cell_size, pos=pos)
+
+    def load_pattern(self, file_path):
+        with open(file_path) as pattern:
+            self.cells = life.parse_life_1_06(pattern)
+
+    def on_touch_up(self, touch):
+        self.life_board.add_pattern(self.cells, self.pos)
+        self.parent.remove_widget(self)
 
 class LifeBoard(ScatterPlane):
     cells = ObjectProperty(Counter())
@@ -104,6 +140,17 @@ class LifeBoard(ScatterPlane):
         self.canvas.add(Rectangle(size=self.cell_size, pos=cell_pos))
 
         self.cells = cells
+
+    def add_pattern(self, pattern, pos):
+        pos = self.to_local(*pos)
+        cell_width = self.cell_width
+
+        delta_x, delta_y  = pos[0]//cell_width, pos[1]//cell_width
+
+        cells = {(cell[0] + delta_x, cell[1] + delta_y): 1 for cell in pattern}
+        self.cells.update(cells)
+
+        self.on_cells(self, self.cells)
 
 class LifeApp(App):
     run_time = BoundedNumericProperty(1, min=0.016, max=1)
