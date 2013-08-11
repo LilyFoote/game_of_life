@@ -13,9 +13,16 @@ from kivy.garden.tickmarker import TickMarker
 
 import life
 
-BLACK = (0, 0, 0)
-BLUE = (0, 0, 1)
-CYAN = (0, 1, 1)
+COLOURS = {
+        'Black': (0, 0, 0),
+        'Red': (1, 0, 0),
+        'Green': (0, 1, 0),
+        'Blue': (0, 0, 1),
+        'Yellow': (1, 1, 0),
+        'Magenta': (1, 0, 1),
+        'Cyan': (0, 1, 1),
+        'White': (1, 1, 1),
+        }
 
 class TickSlider(Slider, TickMarker):
     pass
@@ -107,29 +114,35 @@ class LifeApp(App):
     def build_config(self, config):
         config.setdefaults('life', {
             'run_time': 0.3,
-            'dead_colour': BLACK,
-            'alive_colour': BLUE,
-            'aged_colour': CYAN,
+            'dead_colour': 'Black',
+            'alive_colour': 'Red',
+            'aged_colour': 'Yellow',
             })
 
     def on_config_change(self, config, section, key, value):
         if config is self.config:
             if section == 'life':
                 if key == 'run_time':
-                    self.run_time = value
+                    self.run_time = float(value)
                 elif key == 'dead_colour':
-                    self.dead_colour = value
+                    self.dead_colour = COLOURS[value]
                 elif key == 'alive_colour':
-                    self.alive_colour = value
+                    self.alive_colour = COLOURS[value]
                 elif key == 'aged_colour':
-                    self.aged_colour = value
+                    self.aged_colour = COLOURS[value]
+
+    def build_settings(self, settings):
+        with open('data/settings/life.json', encoding='utf-8') as f:
+            json_data = f.read()
+        settings.add_json_panel("Conway's Game of Life",
+                            self.config, data=json_data)
 
     def build(self):
         config = self.config
         self.run_time = config.getfloat('life', 'run_time')
-        self.dead_colour = config.get('life', 'dead_colour')
-        self.alive_colour = config.get('life', 'alive_colour')
-        self.aged_colour = config.get('life', 'aged_colour')
+        self.dead_colour = COLOURS[config.get('life', 'dead_colour')]
+        self.alive_colour = COLOURS[config.get('life', 'alive_colour')]
+        self.aged_colour = COLOURS[config.get('life', 'aged_colour')]
 
 if __name__ == '__main__':
     LifeApp().run()

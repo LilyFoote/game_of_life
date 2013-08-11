@@ -1,0 +1,29 @@
+[
+    { "type": "numeric",
+      "title": "Iteration Time",
+      "desc": "The time between generations on AutoRun",
+      "section": "life",
+      "key": "run_time" },
+
+    { "type": "options",
+      "title": "Dead cell colour",
+      "desc": "The colour of dead cells",
+      "section": "life",
+      "key": "dead_colour",
+      "options": ["Black", "Red", "Green", "Blue", "Yellow", "Magenta", "Cyan", "White"] },
+
+    { "type": "options",
+      "title": "Alive cell colour",
+      "desc": "The colour of cells that have just become alive",
+      "section": "life",
+      "key": "alive_colour",
+      "options": ["Black", "Red", "Green", "Blue", "Yellow", "Magenta", "Cyan", "White"] },
+
+    { "type": "options",
+      "title": "Aged cell colour",
+      "desc": "The colour of cells that have been alive for a long time",
+      "section": "life",
+      "key": "aged_colour",
+      "options": ["Black", "Red", "Green", "Blue", "Yellow", "Magenta", "Cyan", "White"] }
+
+]
