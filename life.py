@@ -34,4 +34,9 @@ def parse_life_1_06(pattern_file):
     next(pattern_file) # Remove unwanted header
     for line in pattern_file:
         cells.add(tuple(int(i) for i in line.split()))
-    return cells
+    return normalise(cells)
+
+def normalise(cells):
+    min_x = min(cell[0] for cell in cells)
+    min_y = min(cell[1] for cell in cells)
+    return {(cell[0] - min_x, cell[1] - min_y) for cell in cells}
