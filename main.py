@@ -32,11 +32,20 @@ class PatternBox(FloatLayout):
     life_board = ObjectProperty()
 
     def load_pattern(self, file_path):
+        life_board = self.life_board
         pattern = LifePattern(
-                life_board=self.life_board,
-                pos=self.pos)
+                life_board=life_board,
+                pos=self.pos,
+                do_rotation=False,
+                do_scale=False)
         pattern.load_pattern(file_path)
         self.add_widget(pattern)
+
+        transform = life_board.transform
+        pattern.apply_transform(transform)
+
+        transform = pattern.transform
+        transform.translate(self.x - pattern.x, self.y - pattern.y, 0)
 
 class LifePattern(Scatter):
     life_board = ObjectProperty()
@@ -58,6 +67,12 @@ class LifePattern(Scatter):
     def load_pattern(self, file_path):
         with open(file_path) as pattern:
             self.cells = life.parse_life_1_06(pattern)
+
+    def on_touch_down(self, touch):
+        if not self.collide_point(*touch.pos):
+            self.parent.remove_widget(self)
+        else:
+            return super(LifePattern, self).on_touch_down(touch)
 
     def on_touch_up(self, touch):
         self.life_board.add_pattern(self.cells, self.pos)
