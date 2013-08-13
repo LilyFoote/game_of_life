@@ -3,7 +3,7 @@ from collections import Counter
 
 from kivy.app import App
 from kivy.clock import Clock
-from kivy.graphics import *
+from kivy.graphics import Color, Rectangle
 from kivy.properties import (ObjectProperty, ListProperty, NumericProperty,
         BooleanProperty, ReferenceListProperty, BoundedNumericProperty)
 from kivy.uix.floatlayout import FloatLayout
@@ -41,11 +41,14 @@ class PatternBox(FloatLayout):
         pattern.load_pattern(file_path)
         self.add_widget(pattern)
 
-        transform = life_board.transform
-        pattern.apply_transform(transform)
-
-        transform = pattern.transform
-        transform.translate(self.x - pattern.x, self.y - pattern.y, 0)
+        pattern.rotation = life_board.rotation
+        pattern.scale = life_board.scale
+        local_x, local_y = pattern.pos
+        parent_x, parent_y = pattern.to_parent(0, 0)
+        pattern.transform.translate(
+                local_x - parent_x,
+                local_y - parent_y,
+                0)
 
 class LifePattern(Scatter):
     life_board = ObjectProperty()
@@ -75,8 +78,17 @@ class LifePattern(Scatter):
             return super(LifePattern, self).on_touch_down(touch)
 
     def on_touch_up(self, touch):
-        self.life_board.add_pattern(self.cells, self.pos)
-        self.parent.remove_widget(self)
+        if self.collide_point(*touch.pos):
+            self.life_board.add_pattern(self.cells, self.to_parent(0, 0))
+        try:
+            self.parent.remove_widget(self)
+        except AttributeError:
+            pass
+
+    def on_size(self, instance, value):
+        with self.canvas.before:
+            Color(0, 0, 1, 0.2)
+            Rectangle(size=value)
 
 class LifeBoard(ScatterPlane):
     cells = ObjectProperty(Counter())
