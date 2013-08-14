@@ -40,3 +40,18 @@ def normalise(cells):
     min_x = min(cell[0] for cell in cells)
     min_y = min(cell[1] for cell in cells)
     return {(cell[0] - min_x, cell[1] - min_y) for cell in cells}
+
+def rotate(cells, angle):
+    if angle not in (90, 180, 270):
+        raise ValueError('Angle must be 90, 180 or 270')
+    return {rotate_cell(cell, angle) for cell in cells}
+
+def rotate_cell(cell, angle):
+    x, y = cell
+    if angle == 90:
+        return (-y, x)
+    elif angle == 180:
+        return (-x, -y)
+    elif angle == 270:
+        return (y, -x)
+
