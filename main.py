@@ -30,10 +30,11 @@ class TickSlider(Slider, TickMarker):
 
 class PatternBox(FloatLayout):
     life_board = ObjectProperty()
+    pattern = ObjectProperty()
 
     def load_pattern(self, file_path):
         life_board = self.life_board
-        pattern = LifePattern(
+        self.pattern = pattern = LifePattern(
                 life_board=life_board,
                 pos=self.pos,
                 do_rotation=False,
@@ -43,6 +44,12 @@ class PatternBox(FloatLayout):
 
         pattern.rotation = life_board.rotation
         pattern.scale = life_board.scale
+
+    def rotate(self, angle):
+        if self.pattern is not None:
+            cells = self.pattern.cells
+            cells = life.rotate(cells, angle)
+            self.pattern.cells = life.normalise(cells)
 
 class LifePattern(Scatter):
     life_board = ObjectProperty()

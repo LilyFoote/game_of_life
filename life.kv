@@ -71,6 +71,18 @@ BoxLayout:
             rootpath: 'data/patterns'
             on_submit: pattern_box.load_pattern(args[1][0])
 
+        BoxLayout:
+            orientation: 'horizontal'
+            Button:
+                text: 'Rotate 90'
+                on_release: pattern_box.rotate(90)
+            Button:
+                text: 'Rotate 180'
+                on_release: pattern_box.rotate(180)
+            Button:
+                text: 'Rotate 270'
+                on_release: pattern_box.rotate(270)
+
         TickSlider:
             id: iteration_time
 
