@@ -6,11 +6,12 @@ BoxLayout:
     BoxLayout:
         orientation: 'vertical'
 
-        LifeBoard:
-            id: life
-            dead_colour: app.dead_colour
-            alive_colour: app.alive_colour
-            aged_cell_colour: app.aged_colour
+        FloatLayout:
+            LifeBoard:
+                id: life
+                dead_colour: app.dead_colour
+                alive_colour: app.alive_colour
+                aged_cell_colour: app.aged_colour
 
         BoxLayout:
             orientation: 'horizontal'

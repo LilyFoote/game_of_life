@@ -43,12 +43,6 @@ class PatternBox(FloatLayout):
 
         pattern.rotation = life_board.rotation
         pattern.scale = life_board.scale
-        local_x, local_y = pattern.pos
-        parent_x, parent_y = pattern.to_parent(0, 0)
-        pattern.transform.translate(
-                local_x - parent_x,
-                local_y - parent_y,
-                0)
 
 class LifePattern(Scatter):
     life_board = ObjectProperty()
@@ -72,18 +66,15 @@ class LifePattern(Scatter):
             self.cells = life.parse_life_1_06(pattern)
 
     def on_touch_down(self, touch):
-        if not self.collide_point(*touch.pos):
+        if not self.parent.collide_point(*touch.pos):
             self.parent.remove_widget(self)
         else:
             return super(LifePattern, self).on_touch_down(touch)
 
     def on_touch_up(self, touch):
-        if self.collide_point(*touch.pos):
+        if self.life_board.parent.collide_point(*touch.pos):
             self.life_board.add_pattern(self.cells, self.to_parent(0, 0))
-        try:
-            self.parent.remove_widget(self)
-        except AttributeError:
-            pass
+        self.parent.remove_widget(self)
 
     def on_size(self, instance, value):
         with self.canvas.before:
