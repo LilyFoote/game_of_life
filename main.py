@@ -14,6 +14,8 @@ from kivy.garden.tickmarker import TickMarker
 
 import life
 
+import cProfile as profile
+
 COLOURS = {
         'Black': (0, 0, 0),
         'Red': (1, 0, 0),
@@ -215,6 +217,14 @@ class LifeApp(App):
         self.dead_colour = COLOURS[config.get('life', 'dead_colour')]
         self.alive_colour = COLOURS[config.get('life', 'alive_colour')]
         self.aged_colour = COLOURS[config.get('life', 'aged_colour')]
+
+    def on_start(self):
+        self.profile = profile.Profile()
+        self.profile.enable()
+
+    def on_stop(self):
+        self.profile.disable()
+        self.profile.dump_stats('life_profile.txt')
 
 if __name__ == '__main__':
     LifeApp().run()
