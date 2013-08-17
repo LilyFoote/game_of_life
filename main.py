@@ -64,7 +64,7 @@ class LifePattern(Scatter):
         self.canvas.clear()
         with self.canvas:
             for cell in value:
-                pos = [cell[0]*self.cell_width, cell[1]*self.cell_width]
+                pos = cell * self.cell_width
                 Color(*self.alive_colour)
                 Rectangle(size=self.cell_size, pos=pos)
 
@@ -107,7 +107,7 @@ class LifeBoard(ScatterPlane):
         self.canvas.clear()
         with self.canvas:
             for cell, age in value.items():
-                pos = [cell[0]*self.cell_width, cell[1]*self.cell_width]
+                pos = cell * self.cell_width
                 Color(*self.interpolate_colour(age))
                 Rectangle(size=self.cell_size, pos=pos)
 
@@ -115,7 +115,7 @@ class LifeBoard(ScatterPlane):
         new_colour = self.aged_cell_colour
         old_colour = self.alive_colour
         age = min(cell_age - 1, 16)
-        delta = [(new - old)*age/16 for new, old in zip(new_colour, old_colour)]
+        delta = ((new - old)*age/16 for new, old in zip(new_colour, old_colour))
         colour = [old + d for old, d in zip(old_colour, delta)]
         return colour
 
@@ -148,10 +148,7 @@ class LifeBoard(ScatterPlane):
         cells = self.cells
         cell_width = self.cell_width
 
-        x, y = self.to_local(*touch.pos)
-
-        pos = (int(x//cell_width), int(y//cell_width))
-        cell_pos = (pos[0]*cell_width, pos[1]*cell_width)
+        pos = life.Point(*self.to_local(*touch.pos)) // cell_width
 
         if self.draw and not cells[pos]:
             cells[pos] = 1
@@ -162,6 +159,7 @@ class LifeBoard(ScatterPlane):
         else:
             return
 
+        cell_pos = pos*cell_width
         self.canvas.add(Rectangle(size=self.cell_size, pos=cell_pos))
 
         self.cells = cells
@@ -170,9 +168,9 @@ class LifeBoard(ScatterPlane):
         pos = self.to_local(*pos)
         cell_width = self.cell_width
 
-        delta_x, delta_y  = pos[0]//cell_width, pos[1]//cell_width
+        delta = life.Point(*pos) // cell_width
 
-        cells = {(cell[0] + delta_x, cell[1] + delta_y): 1 for cell in pattern}
+        cells = {cell + delta: 1 for cell in pattern}
         self.cells.update(cells)
 
         self.on_cells(self, self.cells)
