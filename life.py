@@ -1,13 +1,71 @@
-from collections import Counter
-from itertools import product
+from collections import Counter, namedtuple
 
-def adjacent_points(point):
-    for x, y in product((-1, 0, 1), (-1, 0, 1)):
-        if (x, y) != (0, 0):
-            yield (point[0] + x, point[1] + y)
+class Point(namedtuple('Point', 'x y')):
+    __slots__ = ()
+
+    def __add__(self, other):
+        try:
+            return self.__class__(
+                    self.x + other[0],
+                    self.y + other[1])
+        except IndexError:
+            return NotImplemented
+
+    def __radd__(self, other):
+        return self + other
+
+    def __sub__(self, other):
+        try:
+            return self.__class__(
+                    self.x - other[0],
+                    self.y - other[1])
+        except IndexError:
+            return NotImplemented
+
+    def __rsub__(self, other):
+        try:
+            return self.__class__(
+                    other[0] - self.x,
+                    other[1] - self.y)
+        except IndexError:
+            return NotImplemented
+
+    def __mul__(self, other):
+        try:
+            return self.__class__(self.x*other, self.y*other)
+        except TypeError:
+            return NotImplemented
+
+    def __rmul__(self, other):
+        return self*other
+
+    def __floordiv__(self, other):
+        try:
+            return self.__class__(
+                    int(self.x // other),
+                    int(self.y // other))
+        except TypeError:
+            return NotImplemented
+
+    def rotate(self, angle):
+        x, y = self
+        if angle == 90:
+            return Point(-y, x)
+        elif angle == 180:
+            return Point(-x, -y)
+        elif angle == 270:
+            return Point(y, -x)
+        else:
+            return ValueError('Angle must be 90, 180 or 270')
+
+    @property
+    def adjacent(self):
+        return {self + (-1, -1), self + (-1, 0), self + (-1, 1),
+                self + (0, -1), self + (0, 1),
+                self + (1, -1), self + (1, 0), self + (1, 1)}
 
 def cell_age(point, old_board):
-    alive_neighbours = sum(bool(old_board[p]) for p in adjacent_points(point))
+    alive_neighbours = len([1 for p in point.adjacent if old_board[p]])
     if alive_neighbours == 3:
         return old_board[point] + 1
     elif alive_neighbours == 2 and old_board[point]:
@@ -22,36 +80,27 @@ def update_cell(point, new_board, old_board):
 
 def next_iteration(old_board):
     new_board = Counter()
+    points = {p for p in old_board}
     for point in old_board:
+        points.update(point.adjacent)
+
+    for point in points:
         update_cell(point, new_board, old_board)
-        for p in adjacent_points(point):
-            if p not in old_board:
-                update_cell(p, new_board, old_board)
     return new_board
 
 def parse_life_1_06(pattern_file):
     cells = set()
     next(pattern_file) # Remove unwanted header
     for line in pattern_file:
-        cells.add(tuple(int(i) for i in line.split()))
+        cells.add(Point(*[int(i) for i in line.split()]))
     return normalise(cells)
 
 def normalise(cells):
-    min_x = min(cell[0] for cell in cells)
-    min_y = min(cell[1] for cell in cells)
-    return {(cell[0] - min_x, cell[1] - min_y) for cell in cells}
+    min_x = min(cell.x for cell in cells)
+    min_y = min(cell.y for cell in cells)
+    return {cell - (min_x, min_y) for cell in cells}
 
 def rotate(cells, angle):
-    if angle not in (90, 180, 270):
-        raise ValueError('Angle must be 90, 180 or 270')
-    return {rotate_cell(cell, angle) for cell in cells}
+    return {cell.rotate(angle) for cell in cells}
 
-def rotate_cell(cell, angle):
-    x, y = cell
-    if angle == 90:
-        return (-y, x)
-    elif angle == 180:
-        return (-x, -y)
-    elif angle == 270:
-        return (y, -x)
 
